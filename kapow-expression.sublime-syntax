@@ -1,0 +1,79 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+# and https://www.sublimetext.com/docs/3/scope_naming.html
+
+# file_extensions:
+#   - expression
+name: Kapow Expression
+scope: source.kapow
+contexts:
+  main:
+    # Strings
+    - match: '"'
+      scope: punctuation.definition.string.begin.kapow-expression
+      push: double_quoted_string
+
+    - match: ">>"
+      scope: punctuation.definition.string.begin.kapow-expression
+      push: angle_string
+
+
+    # Properties
+    - match: \b(URL|WINDOW|Robot\.(name|execution(Id|Errors)))\b
+      scope: variable.language
+
+    # Primary function calls
+    - match: \b(replaceText|replacePattern|removeSpaces|trim|collapseSpaces|capitalize|toLowerCase|toUpperCase|contains|indexOf|startsWith|endsWith|substring|length|now|date|time|shortTime|day|weekday|month|year|round|ceil|floor|toInteger|toNumber|max|min|resolveURL|urlEncode|urlDecode|hexEncode|hexDecode|base64Encode|base64Decode|md5|binaryToText|textToBinary|random|guid|toColumn|toIndex|iteration)(\()
+      captures:
+        1: support.function
+        2: punctuation.definition.group.begin
+      push: function
+
+    # other function calls
+    - match: \b([a-zA-Z]+)(\()
+      captures:
+        1: variable.function
+        2: punctuation.definition.group.begin
+      push: function
+
+    # Numbers
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric.kapow-expression
+
+    # Pattern matches
+    - match: '\$[0-9]+'
+      scope: variable.other.subpattern-match
+
+    # Vars
+    - match: \b[a-zA-Z._]+\b
+      scope: variable.other.readwrite
+
+  function:
+    - meta_scope: meta.function-call
+    - include: main
+    - match: \)
+      scope: punctuation.definition.group.end
+      pop: true
+    - match: ','
+      scope: punctuation.separator.comma
+
+
+
+
+
+  double_quoted_string:
+    - meta_scope: string.quoted.double.kapow-expression
+    - match: '\\.'
+      scope: constant.character.escape.kapow-expression
+    - match: '"'
+      scope: punctuation.definition.string.end.kapow-expression
+      pop: true
+
+  angle_string:
+    - meta_content_scope: string.quoted.other.kapow-expression
+    - match: '\\.'
+      scope: constant.character.escape.kapow-expression
+    - match: '<<'
+      scope: punctuation.definition.string.end.kapow-expression
+      pop: true
